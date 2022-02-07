@@ -6,7 +6,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-5" style="display:contents">
                 <div class="card bg-dark text-white" style="border-radius: 1rem;">
                     <div class="card-body p-5 text-center">
 
@@ -30,9 +30,9 @@
                                     </div>
                                 </asp:View>
 
-                                <asp:View ID="columnview" runat="server" OnLoad="columnview_Load" ValidateRequestMode="Enabled">
+                                <asp:View ID="columnview" runat="server" OnLoad="columnview_Load1" ValidateRequestMode="Enabled">
                                     <label class="col-form-label-lg">Sütun Adı</label>
-                                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                          &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                         &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                         &nbsp&nbsp&nbsp

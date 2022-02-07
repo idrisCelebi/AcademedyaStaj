@@ -1,7 +1,9 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
@@ -12,18 +14,23 @@ namespace academedyaStaj
 {
     public partial class createTable : System.Web.UI.Page
     {
-        SqlConnectionControl scc = new SqlConnectionControl();
-      
+        SqlConnectionControl Scc;
+
         TextBox tb;
         DropDownList ddl;
+        CheckBox cb;
         RequiredFieldValidator rfv;
         CustomValidator cv;
-        static int countcolumn = 0;
+        ImageButton ib;
+
+        static int countcolumn;
         protected void Page_Load(object sender, EventArgs e)
         {
-            
+            Scc = new SqlConnectionControl(Session["username"].ToString());
+
             if (!IsPostBack)
             {
+                countcolumn = 0;
                 Allviews.ActiveViewIndex = 0;
             }
         }
@@ -47,11 +54,11 @@ namespace academedyaStaj
 
             ListItem tarih = new ListItem();
             tarih.Text = "Tarih";
-            tarih.Value = "datetime";
+            tarih.Value = "date";
 
             ListItem benzersiz = new ListItem();
-            benzersiz.Text = "Benzersiz";
-            benzersiz.Value = "uniqueidentifier";
+            benzersiz.Text = "Decimal";
+            benzersiz.Value = "decimal(18, 2)";
 
             ddl.Items.Insert(0, sayi);
             ddl.Items.Insert(1, metin);
@@ -64,6 +71,7 @@ namespace academedyaStaj
             infocreatetable.Text = "";
             countcolumn++;
             showcolumns();
+
 
         }
         public bool issame()
@@ -85,13 +93,13 @@ namespace academedyaStaj
 
             return false;
         }
+
         protected void finishcreateTable_Click(object sender, EventArgs e)
         {
             inputlist ip = new inputlist();
             ip.alltextbox = PlaceHolder1.Controls.OfType<TextBox>().ToList();
             ip.alldropdown = PlaceHolder1.Controls.OfType<DropDownList>().ToList();
-
-
+            ip.allcheckbox = PlaceHolder1.Controls.OfType<CheckBox>().ToList();
             if (rfv == null)
             {
                 infocreatetable.Text = "Sütunsuz tablo oluşturulamaz";
@@ -99,44 +107,34 @@ namespace academedyaStaj
             }
             else if (rfv.IsValid != true || cv.IsValid != true)
             {
-
                 infocreatetable.Text = "Lütfen düzgün değerler giriniz";
                 infocreatetable.ForeColor = System.Drawing.Color.Red;
-
             }
 
             else if (!issame())
             {
-                SqlConnection conn = scc.getdatabasename();
                 try
                 {
-
-                   
-
-                    conn.Open();
-                    String Command1 = "Create Table " + tablename.Text + "(id int IDENTITY(1,1) PRIMARY KEY);";
-                    SqlCommand addtable = new SqlCommand(Command1, conn);
-                    addtable.ExecuteNonQuery();
-
+                    StringBuilder columns = new StringBuilder();
                     foreach (TextBox createtotextBox in ip.alltextbox)
                     {
-
-                        String Command2 = "alter table " + tablename.Text + " add " + createtotextBox.Text + " " + ip.alldropdown.Where(x => getnumberinstring(x.ID) == getnumberinstring(createtotextBox.ID)).First().SelectedValue + ";";
-                        SqlCommand addcolumn = new SqlCommand(Command2, conn);
-                        int happen = addcolumn.ExecuteNonQuery();
+                        if (ip.allcheckbox.Where(x => getnumberinstring(x.ID) == getnumberinstring(createtotextBox.ID)).First().Checked)
+                        {
+                            columns.AppendFormat("{0} {1} {2}", createtotextBox.Text, ip.alldropdown.Where(x => getnumberinstring(x.ID) == getnumberinstring(createtotextBox.ID)).First().SelectedValue, "NULL,");
+                        }
+                        else
+                        {
+                            columns.AppendFormat("{0} {1} {2}", createtotextBox.Text, ip.alldropdown.Where(x => getnumberinstring(x.ID) == getnumberinstring(createtotextBox.ID)).First().SelectedValue, "NOT NULL,");
+                        }
                     }
-
+                    String createTable = "Create Table " + tablename.Text + "(id int IDENTITY(1,1) PRIMARY KEY," + columns.ToString() + ");";
+                    Scc.basic(createTable);
                     Response.Redirect("Tables.aspx");
 
                 }
-
-                catch
+                catch (Exception ex)
                 {
-                    Response.Write("Beklenmedik bir hata");
-                }
-                finally
-                {
-                    conn.Close();
+                    Console.WriteLine("Inner Exception: " + ex.Message);
                 }
             }
             else
@@ -144,34 +142,39 @@ namespace academedyaStaj
                 infocreatetable.Text = "Aynı sütun isimleri olamaz!";
                 infocreatetable.ForeColor = System.Drawing.Color.Red;
             }
-
-
-
-
-
         }
         public void showcolumns()
         {
             PlaceHolder1.Controls.Clear();
             for (int j = 0; j < countcolumn; j++)
             {
+                ib = new ImageButton();
+                ib.ImageUrl = "assets/delete2.jpg";
+                ib.Width = 25;
+                ib.Height = 20;
+                ib.AlternateText = "Kaldır";
+                ib.ForeColor = System.Drawing.Color.Red;
+                ib.CausesValidation = false;
+                ib.Click += new ImageClickEventHandler(ImageButton1_Click);
+
                 tb = new TextBox();
                 tb.ID = "textbox" + j.ToString();
                 tb.CssClass = "form-control-sm";
 
-
                 filldropdownforcolumntype();
                 ddl.ID = "dropdown" + j.ToString();
-                ddl.CssClass = "nav-item dropdown";
-                //ddl.AutoPostBack = true;
-                // ddl.SelectedIndexChanged += new EventHandler(SelectedIndexChanged);
+                ddl.CssClass = "nav-item dropdown";           
+
+                cb = new CheckBox();
+                cb.ID = "checkbox" + j.ToString();
+                cb.Text = "Null olabilir";
+                cb.Checked = true;
 
                 rfv = new RequiredFieldValidator();
                 rfv.ID = "validator" + j.ToString();
                 rfv.ControlToValidate = "textbox" + j.ToString();
                 rfv.ErrorMessage = "*";
                 rfv.ForeColor = System.Drawing.Color.Red;
-               
 
                 cv = new CustomValidator();
                 cv.ID = "cvalidator" + j.ToString();
@@ -182,31 +185,26 @@ namespace academedyaStaj
                 cv.ServerValidate += new ServerValidateEventHandler(cv_ServerValidate);
                 cv.Display = (ValidatorDisplay)2;
 
+                PlaceHolder1.Controls.Add(ib);
                 PlaceHolder1.Controls.Add(rfv);
                 PlaceHolder1.Controls.Add(cv);
                 PlaceHolder1.Controls.Add(tb);
-                PlaceHolder1.Controls.Add(new HtmlGenericControl("  "));
+                PlaceHolder1.Controls.Add(new HtmlGenericControl(" "));
                 PlaceHolder1.Controls.Add(ddl);
+                PlaceHolder1.Controls.Add(new HtmlGenericControl(" "));
+                PlaceHolder1.Controls.Add(cb);
                 PlaceHolder1.Controls.Add(new HtmlGenericControl("br"));
 
             }
+
         }
-
-        /* protected void SelectedIndexChanged(object sender, EventArgs e)
-         {
-             DropDownList ddl = (DropDownList)sender;
-             string ID = ddl.ID;
-             inputlist ip = new inputlist();
-             ip.alltextbox = PlaceHolder1.Controls.OfType<TextBox>().ToList();
-             ip.alldropdown = PlaceHolder1.Controls.OfType<DropDownList>().ToList();
-
-
-                      foreach (TextBox createtotextBox in ip.alltextbox)
-             {
-
-                 }
-         }
-        */
+        protected void ImageButton1_Click(object sender, ImageClickEventArgs e)
+        {
+            ImageButton btn = sender as ImageButton;
+            infocreatetable.Text = "";
+            countcolumn--;
+            showcolumns();
+        }   
         public int getnumberinstring(String ddl_id)
         {
             var data = Regex.Match(ddl_id, @"\d+").Value;
@@ -215,36 +213,34 @@ namespace academedyaStaj
 
 
         }
-
-        protected void columnview_Load(object sender, EventArgs e)
+        protected void columnview_Load1(object sender, EventArgs e)
         {
             showcolumns();
-
         }
-
         protected void CustomValidator1_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            SqlConnection conn = scc.getdatabasename();
-            conn.Open();
-            SqlCommand sqlCmd = new SqlCommand("SELECT COUNT(1) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME=@tablename", conn);
-
-            sqlCmd.Parameters.AddWithValue("@tablename", args.Value);
-
-            int count = Convert.ToInt32(sqlCmd.ExecuteScalar());
-            conn.Close();
-            if (count == 1)
+            try
             {
-                args.IsValid = false;
+                String command = "Select Count(1) from INFORMATION_SCHEMA.TABLES Where TABLE_NAME='" + args.Value + "'";
+                bool count = Scc.ifCount(command);
+                if (count)
+                {
+                    args.IsValid = false;
+                }
+                else
+                {
+                    args.IsValid = true;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                args.IsValid = true;
+                Console.WriteLine("Inner Exception: " + ex.Message);
             }
+
         }
-
         protected void cv_ServerValidate(object source, ServerValidateEventArgs args)
         {
-            if (args.Value == "id" || args.Value=="ID")
+            if (args.Value == "id" || args.Value == "ID")
             {
                 args.IsValid = false;
             }
@@ -258,8 +254,9 @@ namespace academedyaStaj
     public class inputlist
     {
         public List<DropDownList> alldropdown { get; set; }
-
         public List<TextBox> alltextbox { get; set; }
+        public List<CheckBox> allcheckbox { get; set; }
+
     }
 
 

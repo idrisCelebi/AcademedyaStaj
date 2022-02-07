@@ -10,8 +10,8 @@ namespace academedyaStaj
 {
     public partial class Activation : System.Web.UI.Page
     {
-        SqlConnection conn = new SqlConnection(@"data source=DESKTOP-AR7QPFE\CENGIZHAN;initial catalog=AcademedyaStajMain;integrated security=True");
-        
+        SqlConnectionControl Scc = new SqlConnectionControl();
+
         public string Databaseusername = "";
         protected void Page_Load(object sender, EventArgs e)
         {   if (Request.QueryString["activationcode"] != null)
@@ -24,12 +24,12 @@ namespace academedyaStaj
                 }
                 else
                 {
-                    conn.Open();
-                    SqlCommand command = new SqlCommand("update Users Set activation=1 where id=@id", conn);
+                    Scc.openDB(Scc._connection);
+                    SqlCommand command = new SqlCommand("update Users Set activation=1 where id=@id",Scc._connection );
                     command.Parameters.AddWithValue("@id", idtoactive);
                     SqlDataReader dataread = command.ExecuteReader();
-                 
-                        conn.Close();
+
+                    Scc.closeDB(Scc._connection);
                     createDatabase(Databaseusername);
                         activationinfo.Text = "Aktivasyon işlemi başarıyla yapılmıştır.Buradan giriş yapabilirsiniz.";
                     activationinfo.ForeColor = System.Drawing.Color.Green;
@@ -43,33 +43,62 @@ namespace academedyaStaj
   
         public bool isactive(int userid)
         {
-            conn.Open();
-            SqlCommand command = new SqlCommand("select username from Users where id=@id and activation=0", conn);
-            command.Parameters.AddWithValue("@id", userid);
-            SqlDataReader reader = command.ExecuteReader();
 
-            if (reader.Read())
+            try
             {
-                Databaseusername = reader.GetValue(0).ToString();
-                conn.Close();
-                return true;
+                Scc.openDB(Scc._connection);
+
+                SqlCommand command = new SqlCommand("select username from Users where id=@id and activation=0", Scc._connection);
+                command.Parameters.AddWithValue("@id", userid);
+                SqlDataReader reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    Databaseusername = reader.GetValue(0).ToString();
+
+                    return true;
+                }
+                else
+                {
+
+
+                    return false;
+                }
             }
-            else
+            catch (Exception ex)
             {
-               
-                conn.Close();   
-                return false;
+                Console.WriteLine("Inner Exception: " + ex.Message);
+                return true;
+
+            }
+            finally
+            {
+                Scc.closeDB(Scc._connection);
             }
 
         }
         public void createDatabase(String getusername)
         {
-            conn.Open();
-            String commandtext = "Create Database " + getusername;
-            SqlCommand command = new SqlCommand(commandtext, conn);
-           
-            int ithappen = command.ExecuteNonQuery();
-            conn.Close();
+
+            try
+            {
+                Scc.openDB(Scc._connection);
+                String commandtext = "Create Database " + getusername;
+                SqlCommand command = new SqlCommand(commandtext, Scc._connection);
+
+                int ithappen = command.ExecuteNonQuery();
+                Scc.closeDB(Scc._connection);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Inner Exception: " + ex.Message);
+
+
+            }
+            finally
+            {
+                Scc.closeDB(Scc._connection);
+            }
         }
     }
 }

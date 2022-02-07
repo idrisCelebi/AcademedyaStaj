@@ -50,13 +50,8 @@ D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\roslyn\vbc.ex
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\roslyn\vbc.rsp
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\roslyn\VBCSCompiler.exe
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\roslyn\VBCSCompiler.exe.config
-D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
-D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
-D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\obj\Debug\academedyaStaj.csproj.AssemblyReference.cache
-D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\obj\Debug\academedyaStaj.csproj.CoreCompileInputs.cache
-D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\obj\Debug\academedyaStaj.dll
-D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\obj\Debug\academedyaStaj.pdb
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Web.v21.1.dll
+D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Data.v21.1.dll
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Printing.v21.1.Core.dll
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Office.v21.1.Core.dll
@@ -64,6 +59,7 @@ D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Ri
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Pdf.v21.1.Core.dll
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Pdf.v21.1.Drawing.dll
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Web.v21.1.xml
+D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Data.v21.1.xml
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Printing.v21.1.Core.xml
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\DevExpress.Office.v21.1.Core.xml
@@ -94,3 +90,7 @@ D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\de\DevExpress
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\es\DevExpress.Pdf.v21.1.Core.resources.dll
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\ja\DevExpress.Pdf.v21.1.Core.resources.dll
 D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\bin\ru\DevExpress.Pdf.v21.1.Core.resources.dll
+D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\obj\Debug\academedyaStaj.csproj.CoreCompileInputs.cache
+D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\obj\Debug\academedyaStaj.dll
+D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\obj\Debug\academedyaStaj.pdb
+D:\visualstudioprojects\academedya_Staj_Project\academedyaStaj\obj\Debug\academedyaStaj.csproj.AssemblyReference.cache

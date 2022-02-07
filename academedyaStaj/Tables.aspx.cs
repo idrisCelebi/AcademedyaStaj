@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
@@ -10,33 +11,49 @@ namespace academedyaStaj
 {
     public partial class Tables : System.Web.UI.Page
     {
-        SqlConnectionControl Scc = new SqlConnectionControl();
-        
+        SqlConnectionControl Scc;
+
+
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            
-            if(!IsPostBack)
+            Scc = new SqlConnectionControl(Session["username"].ToString());
+
+            if (!IsPostBack)
             {
-                filllist(Scc.getdatabasename());
+                filllist();
             }
         }
-        public void filllist(SqlConnection conn)
+        public void filllist()
         {
-            conn.Open();
-            SqlCommand bring = new SqlCommand("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES", conn);
-           
-            tables.DataSource = bring.ExecuteReader();
-            tables.DataTextField = "TABLE_NAME";
-            tables.DataValueField = "TABLE_NAME";
-            tables.DataBind();
-            
 
+
+            try
+            {
+               
+                DataSet ds = new DataSet();
+                String getString = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES";
+                Scc.getdataAdapter(getString).Fill(ds);
+                tables.DataTextField = ds.Tables[0].Columns["TABLE_NAME"].ToString();
+                tables.DataValueField = ds.Tables[0].Columns["TABLE_NAME"].ToString();
+                tables.DataSource = ds.Tables[0];
+                tables.DataBind();
+
+                Scc.closeDB(Scc._connection);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Inner Exception: " + ex.Message);
+
+
+            }
+         
         }
         protected void ImageButton1_Click(object sender, ImageClickEventArgs e)
         {
             Response.Redirect("createTable.aspx");
         }
-
+        
        
     }
 }

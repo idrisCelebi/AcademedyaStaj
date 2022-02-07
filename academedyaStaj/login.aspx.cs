@@ -10,15 +10,20 @@ namespace academedyaStaj
 {
     public partial class login : System.Web.UI.Page
     {
-        
-        SqlConnection conn = new SqlConnection(@"data source=DESKTOP-AR7QPFE\CENGIZHAN;initial catalog=AcademedyaStajMain;integrated security=True");
+        SqlConnectionControl Scc = new SqlConnectionControl("AcademedyaStajMain");
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(!IsPostBack)
+            
+            if (!IsPostBack)
             {
-                if (Request.Cookies["username"] != null)
+                Session.Clear();
+                if (Request.Cookies["username"] != null && Request.Cookies["password"]!=null)
                 {
                     username.Text = Request.Cookies["username"].Value;
+                    password.Attributes["value"] = Request.Cookies["password"].Value;
+                    
+                    rememberme.Checked = true;
                 }
             }
             
@@ -26,65 +31,47 @@ namespace academedyaStaj
 
         protected void loginbutton_Click(object sender, EventArgs e)
         {
+            
             try
-            {
-
-                conn.Open();
-
-                string query = "Select activation from Users Where username=@username And password=@password";
-                SqlCommand sqlCmd = new SqlCommand(cmdText: query, conn);
-
-                sqlCmd.Parameters.AddWithValue("@username",username.Text);
-                sqlCmd.Parameters.AddWithValue("@password",password.Text);
-                
-                SqlDataReader reader = sqlCmd.ExecuteReader();
-                
-                if (reader.Read())
-                {
-                    
-                    if (int.Parse(reader.GetValue(0).ToString())==1)//aktivasyonu yapılmış mı kontrolü
-                    {
-                        
-                        conn.Close();
-                        if(rememberme.Checked)
+            {   
+                string query = "Select activation from Users Where username='" + username.Text + "' And password=" + password.Text;
+                int loginresult = Scc.loginUserType(query);
+                if (loginresult==1)
+                {                                                    
+                        if (rememberme.Checked)
                         {
-                            Response.Cookies["username"].Value = username.Text;
+                            Response.Cookies["username"].Value = username.Text;                            
                             Response.Cookies["username"].Expires = DateTime.Now.AddDays(30);
-                            Session["username"] = username.Text;
-                            
-
+                        Response.Cookies["password"].Value = password.Text;
+                        Response.Cookies["password"].Expires = DateTime.Now.AddDays(30);
+                        Session["username"] = username.Text;                           
                             Response.Redirect("Tables.aspx");
                         }
                         else {
-                            
-                            Session["username"] = username.Text;
-                           
-                            Response.Redirect("Tables.aspx");
-                           
-                        }
-                    
-
-                    }
-                    else
-                    {
-                        conn.Close();
-                        infologin.Text = "Lütfen mail adresinize gelen doğrulama linkine tıklayarak üyeliğinizi aktif ediniz";
-                        infologin.ForeColor = System.Drawing.Color.Red;
-                    }
-                    
+                        Response.Cookies["username"].Expires = DateTime.Now.AddDays(-1);
+                        Response.Cookies["password"].Expires = DateTime.Now.AddDays(-1);
+                        Session["username"] = username.Text;                           
+                            Response.Redirect("Tables.aspx");                          
+                        }                   
+                                              
                 }
-                else
+                if(loginresult==0)
                 {
-                    conn.Close();
+                    infologin.Text = "Lütfen mail adresinize gelen doğrulama linkine tıklayarak üyeliğinizi aktif ediniz";
+                    infologin.ForeColor = System.Drawing.Color.Red;
+                }
+                
+                else
+                {                   
                     infologin.Text = "Kullanıcı adı veya şifre hatalı!";
                     infologin.ForeColor = System.Drawing.Color.Red;
                 }
 
             }
-            catch
+            catch(Exception ex)
             {
-
-            }
+                Console.WriteLine("Inner Exception: " + ex.Message);                          
+            }          
         }
     }
 }
