@@ -10,10 +10,13 @@ namespace academedyaStaj
 {
     public partial class Main : System.Web.UI.MasterPage
     {
-        SqlConnection conn = new SqlConnection(@"data source=DESKTOP-AR7QPFE\CENGIZHAN;initial catalog=AcademedyaStajMain;integrated security=True");
+        SqlConnectionControl Scc;
+
         protected void Page_Load(object sender, EventArgs e)
-        {   if (Session["username"] == null)
-            {
+        {
+            Scc = new SqlConnectionControl(Session["username"].ToString());
+            if (Session["username"] == null)
+            {              
                 Response.Redirect("login.aspx");
             }
             else
@@ -23,16 +26,8 @@ namespace academedyaStaj
         }
         public void bringidenty()
         {
-            conn.Open();
-            SqlCommand bring = new SqlCommand("Select firstname+' '+lastname from Users where username=@username", conn);
-            bring.Parameters.AddWithValue("@username", Session["username"]);
-            SqlDataReader dataRead = bring.ExecuteReader();
-            
-            if(dataRead.Read())
-            {
-                showwho.Text = dataRead.GetValue(0).ToString();
-            }
-            conn.Close();
+            String com = "Select firstname+' '+lastname from Users where username='"+Session["username"]+"'";       
+                showwho.Text = Scc.getidenty(com);         
         }
     }
 }

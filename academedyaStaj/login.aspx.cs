@@ -10,7 +10,7 @@ namespace academedyaStaj
 {
     public partial class login : System.Web.UI.Page
     {
-        SqlConnectionControl Scc = new SqlConnectionControl("AcademedyaStajMain");
+        SqlConnectionControl Scc = new SqlConnectionControl();
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -45,13 +45,13 @@ namespace academedyaStaj
                         Response.Cookies["password"].Value = password.Text;
                         Response.Cookies["password"].Expires = DateTime.Now.AddDays(30);
                         Session["username"] = username.Text;                           
-                            Response.Redirect("Tables.aspx");
+                            Response.Redirect("Tables.aspx",false);
                         }
                         else {
                         Response.Cookies["username"].Expires = DateTime.Now.AddDays(-1);
                         Response.Cookies["password"].Expires = DateTime.Now.AddDays(-1);
                         Session["username"] = username.Text;                           
-                            Response.Redirect("Tables.aspx");                          
+                            Response.Redirect("Tables.aspx",false);                          
                         }                   
                                               
                 }
@@ -61,7 +61,7 @@ namespace academedyaStaj
                     infologin.ForeColor = System.Drawing.Color.Red;
                 }
                 
-                else
+                else if(loginresult==-1)
                 {                   
                     infologin.Text = "Kullanıcı adı veya şifre hatalı!";
                     infologin.ForeColor = System.Drawing.Color.Red;

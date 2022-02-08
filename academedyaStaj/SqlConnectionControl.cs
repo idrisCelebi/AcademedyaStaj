@@ -14,14 +14,14 @@ namespace academedyaStaj
 
         public SqlConnection _connection;
         public SqlTransaction transaction;
-        public SqlConnectionControl(String username = "AcademedyaStajMain")
+        public SqlConnectionControl(String username = "akaStajIdris")
         {
 
             SqlConnection conn;
 
-            conn = new SqlConnection(@"data source=DESKTOP-AR7QPFE\CENGIZHAN;initial catalog=" + username + ";integrated security=True");
+            //conn = new SqlConnection(@"data source=(localdb)\desktop;initial catalog=" + username + ";integrated security=True");
 
-
+            conn = new SqlConnection(@"Data Source=178.18.205.230,49501;Initial Catalog="+username+";User ID=devUser;Password=akadev2018");
             _connection = conn;
 
 
@@ -65,6 +65,35 @@ namespace academedyaStaj
                 closeDB(_connection);
             }
         }
+        public String getidenty(String command)
+        {
+            try
+            {
+                openDB(_connection);
+                SqlCommand isEmpty = new SqlCommand(command, _connection);
+                SqlDataReader ch = isEmpty.ExecuteReader();
+                if (ch.Read())
+                {
+                    String idi = ch.GetValue(0).ToString();
+                    ch.Close();
+                    return idi;
+                }
+                else
+                {
+                    ch.Close();
+                    return "";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Inner Exception: " + ex.Message);
+                return "";
+            }
+            finally
+            {
+                closeDB(_connection);
+            }
+        }
         public int loginUserType(String command)
         {
             try
@@ -91,9 +120,9 @@ namespace academedyaStaj
                 }
 
             }
-            catch (Exception ex)
+              catch (Exception ex)
             {
-                Console.WriteLine("Inner Exception: " + ex.Message);
+                 Console.WriteLine("Inner Exception: " + ex.Message);
                 return -1;
             }
             finally
