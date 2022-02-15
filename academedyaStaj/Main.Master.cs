@@ -14,7 +14,7 @@ namespace academedyaStaj
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            Scc = new SqlConnectionControl(Session["username"].ToString());
+            Scc = new SqlConnectionControl();
             if (Session["username"] == null)
             {              
                 Response.Redirect("login.aspx");
