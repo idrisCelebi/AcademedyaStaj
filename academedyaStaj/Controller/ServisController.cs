@@ -10,23 +10,34 @@ namespace academedyaStaj
     public class ServisController : ApiController
     {
         SqlConnectionControl Scc = new SqlConnectionControl();
-        idoResponse ido = new idoResponse();
+        
 
         // GET api/<controller>/5
         [HttpGet]
-        public IHttpActionResult Get(int id)
+        public IHttpActionResult Get()
         {
             try
             {
-                string command = "Select AD,SOYAD from Users";
+                string command = "Select firstname,lastname,email,username from Users where activation=0";
 
-                List<idoResponse> adList = new List<idoResponse>();
+                List<UsersModal> adList = new List<UsersModal>();
+                List<String> ad = new List<string>();
+                List<String> soyad = new List<string>();
+                List<String> email = new List<string>();
+                List<String> kadi = new List<string>();
 
-                for (int i = 0; i < 2; i++)
+                ad=Scc.getList(command, "firstname");
+                soyad=Scc.getList(command, "lastname");
+                email=Scc.getList(command, "email");
+                kadi =Scc.getList(command, "username");
+                for (int i = 0; i < ad.Count; i++)
                 {
-                    idoResponse resp = new idoResponse();
-                    resp.ad = "";
-                    resp.soyad = "";
+                    UsersModal resp = new UsersModal();
+                    resp.ad = ad[i];
+                    resp.soyad = soyad[i];
+                    resp.email = email[i];
+                    resp.kadi = kadi[i];
+
 
                     adList.Add(resp);
                 }
@@ -36,7 +47,7 @@ namespace academedyaStaj
                 r.status = "S";
                 r.data = adList;
 
-                return Ok(adList);
+                return Ok(r);
             }
             catch (Exception)
             {
@@ -64,7 +75,7 @@ namespace academedyaStaj
         public class Response
         {
             public string message { get; set; }
-            public List<idoResponse> data { get; set; }
+            public List<UsersModal> data { get; set; }
             public string status { get; set; }
         }
     }
