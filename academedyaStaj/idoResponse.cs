@@ -7,8 +7,8 @@ namespace academedyaStaj
 {
     public class idoResponse
     {
-        public List<String> Data { get; set; }
-        public List<String> ErrorList { get; set; }
+        public string ad { get; set; }
+        public string soyad { get; set; }
 
     }
 }
