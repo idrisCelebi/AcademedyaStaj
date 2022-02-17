@@ -30,11 +30,6 @@ namespace academedyaStaj
         RequiredFieldValidator rfv;
         ImageButton ib;
 
-        TextBox tb2;
-        DropDownList ddl2;
-        CheckBox cb2;
-        RequiredFieldValidator rfv2;
-
         bool tablehasData;    
         protected void Page_Load(object sender, EventArgs e)
         {

@@ -26,7 +26,7 @@ namespace academedyaStaj
             {
                 try
                 {
-                    int newidto_use = Scc.newidgenerator("Users", Scc._connection);
+                    int newidto_use = Scc.newidgenerator("Users");
                     String insertCommand = "insert into Users (id,firstname,lastname,email,username,password,activation,admin)" +
                      " values(" + newidto_use + ",'" + firstname.Text + "','" + lastname.Text + "','" + email.Text + "','" + username.Text + "','" + password.Text + "',0,0)";
                     Scc.basic(insertCommand);

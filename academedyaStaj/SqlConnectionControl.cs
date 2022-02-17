@@ -14,6 +14,7 @@ namespace academedyaStaj
 
         public SqlConnection _connection;
         public SqlTransaction transaction;
+        public SqlCommand mainCommand;
         public SqlConnectionControl(String username = "akaStajIdris")
         {
 
@@ -21,7 +22,7 @@ namespace academedyaStaj
 
             //conn = new SqlConnection(@"data source=(localdb)\desktop;initial catalog=" + username + ";integrated security=True");
 
-            conn = new SqlConnection(@"Data Source=178.18.205.230,49501;Initial Catalog="+username+";User ID=devUser;Password=akadev2018");
+            conn = new SqlConnection(@"Data Source=178.18.205.230,49501;Initial Catalog=" + username + ";User ID=devUser;Password=akadev2018");
             _connection = conn;
 
 
@@ -29,6 +30,8 @@ namespace academedyaStaj
 
         public void openDB(SqlConnection conn)
         {
+            mainCommand = new SqlCommand();
+            mainCommand.Connection = _connection;
             conn.Open();
 
         }
@@ -42,8 +45,9 @@ namespace academedyaStaj
             try
             {
                 openDB(_connection);
-                SqlCommand isEmpty = new SqlCommand(command, _connection);
-                SqlDataReader ch = isEmpty.ExecuteReader();
+                mainCommand.CommandType = CommandType.Text;
+                mainCommand.CommandText = command;
+                SqlDataReader ch = mainCommand.ExecuteReader();
                 if (ch.Read())
                 {
                     ch.Close();
@@ -70,8 +74,9 @@ namespace academedyaStaj
             try
             {
                 openDB(_connection);
-                SqlCommand isEmpty = new SqlCommand(command, _connection);
-                SqlDataReader ch = isEmpty.ExecuteReader();
+                mainCommand.CommandType = CommandType.Text;
+                mainCommand.CommandText = command;
+                SqlDataReader ch = mainCommand.ExecuteReader();
                 if (ch.Read())
                 {
                     String idi = ch.GetValue(0).ToString();
@@ -99,8 +104,9 @@ namespace academedyaStaj
             try
             {
                 openDB(_connection);
-                SqlCommand sqlCmd = new SqlCommand(cmdText: command, _connection);
-                SqlDataReader reader = sqlCmd.ExecuteReader();
+                mainCommand.CommandType = CommandType.Text;
+                mainCommand.CommandText = command;
+                SqlDataReader reader = mainCommand.ExecuteReader();
                 if (reader.Read())
                 {
 
@@ -120,9 +126,9 @@ namespace academedyaStaj
                 }
 
             }
-              catch (Exception ex)
+            catch (Exception ex)
             {
-                 Console.WriteLine("Inner Exception: " + ex.Message);
+                Console.WriteLine("Inner Exception: " + ex.Message);
                 return -1;
             }
             finally
@@ -136,8 +142,9 @@ namespace academedyaStaj
             try
             {
                 openDB(_connection);
-                SqlCommand sqlCmd = new SqlCommand(command, _connection);
-                int count = Convert.ToInt32(sqlCmd.ExecuteScalar());
+                mainCommand.CommandType = CommandType.Text;
+                mainCommand.CommandText = command;            
+                int count = Convert.ToInt32(mainCommand.ExecuteScalar());
                 if (count == 1)
                 {
                     return true;
@@ -158,7 +165,7 @@ namespace academedyaStaj
                 closeDB(_connection);
             }
         }
-        public int newidgenerator(String tableName, SqlConnection conname)
+        public int newidgenerator(String tableName)
         {
             int yenidsayi = 0;
             try
@@ -173,9 +180,11 @@ namespace academedyaStaj
                     StringBuilder query = new StringBuilder();
                     query.AppendFormat("select count(1) from {0} where id = @yenid", tableName);
                     yenidsayi = r.Next();
-                    SqlCommand yeniduret = new SqlCommand(query.ToString(), conname);
-                    yeniduret.Parameters.AddWithValue("@yenid", yenidsayi);
-                    int count = Convert.ToInt32(yeniduret.ExecuteScalar());
+                    mainCommand.CommandType = CommandType.Text;
+                    mainCommand.CommandText = query.ToString();
+                    
+                    mainCommand.Parameters.AddWithValue("@yenid", yenidsayi);
+                    int count = Convert.ToInt32(mainCommand.ExecuteScalar());
                     if (count == 1)
                     {
                         eslesme = true;
@@ -205,9 +214,13 @@ namespace academedyaStaj
         {
             try
             {
-                openDB(_connection);
-                SqlCommand adduser = new SqlCommand(command, _connection);
-                adduser.ExecuteNonQuery();
+                if (_connection != null && _connection.State == ConnectionState.Closed)
+                    openDB(_connection);
+
+                mainCommand.CommandType = CommandType.Text;
+                mainCommand.CommandText = command;
+               
+                mainCommand.ExecuteNonQuery();
             }
             catch (Exception ex)
             {
@@ -215,26 +228,26 @@ namespace academedyaStaj
             }
             finally
             {
-                closeDB(_connection);
+                mainCommand.Parameters.Clear();
             }
         }
         public SqlDataAdapter getdataAdapter(String command)
         {
             try
             {
-                openDB(_connection);
-                SqlCommand bring = new SqlCommand(command, _connection);
-                SqlDataAdapter da = new SqlDataAdapter(bring);
+                if (_connection != null && _connection.State == ConnectionState.Closed)
+                    openDB(_connection);
+
+                mainCommand.CommandType = CommandType.Text;
+                mainCommand.CommandText = command;
+              
+                SqlDataAdapter da = new SqlDataAdapter(mainCommand);
                 return da;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Inner Exception: " + ex.Message);
                 return null;
-            }
-            finally
-            {
-                closeDB(_connection);
             }
         }
         public List<string> getList(String command, String columnname)
@@ -243,8 +256,9 @@ namespace academedyaStaj
             {
                 List<string> columnlist = new List<string>();
                 openDB(_connection);
-                SqlCommand bring = new SqlCommand(command, _connection);
-                SqlDataReader rdr = bring.ExecuteReader();
+                mainCommand.CommandType = CommandType.Text;
+                mainCommand.CommandText = command;
+                SqlDataReader rdr = mainCommand.ExecuteReader();
                 while (rdr.Read())
                 {
                     columnlist.Add(rdr[columnname].ToString());
@@ -266,13 +280,14 @@ namespace academedyaStaj
         {
             try
             {
-                String ret="";
+                String ret = "";
                 openDB(_connection);
-                SqlCommand bring = new SqlCommand(command, _connection);
-                SqlDataReader rdr = bring.ExecuteReader();
-                if(rdr.Read())
+                mainCommand.CommandType = CommandType.Text;
+                mainCommand.CommandText = command;
+                SqlDataReader rdr = mainCommand.ExecuteReader();
+                if (rdr.Read())
                 {
-                    ret=rdr[columnname].ToString();
+                    ret = rdr[columnname].ToString();
                 }
                 return ret;
             }
@@ -286,24 +301,24 @@ namespace academedyaStaj
                 closeDB(_connection);
             }
         }
-        public void addExcel(String tablename,DataTable dtExcelData)
+        public void addExcel(String tablename, DataTable dtExcelData)
         {
-           
+
             try
             {
                 List<string> columnli = new List<string>();
                 SqlBulkCopy sqlBulkCopy = new SqlBulkCopy(_connection);
                 sqlBulkCopy.DestinationTableName = tablename;
-                String comm = "SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='" +tablename + "';";
+                String comm = "SELECT COLUMN_NAME, DATA_TYPE, IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='" + tablename + "';";
                 columnli = getList(comm, "COLUMN_NAME");
                 columnli.RemoveAt(0);
-                for(int i=0;i<columnli.Count;i++)
+                for (int i = 0; i < columnli.Count; i++)
                 {
                     sqlBulkCopy.ColumnMappings.Add(columnli[i], columnli[i]);
-                }                             
+                }
                 openDB(_connection);
                 sqlBulkCopy.WriteToServer(dtExcelData);
-               
+
             }
             catch (Exception ex)
             {
@@ -331,13 +346,13 @@ namespace academedyaStaj
             {
                 closeDB(_connection);
             }
-            
+
         }
         public void Commit_Transaction()
         {
             try
             {
-                
+
                 openDB(_connection);
 
                 this.transaction.Commit();
@@ -355,9 +370,9 @@ namespace academedyaStaj
         {
             try
             {
-                
+
                 openDB(_connection);
-               
+
                 this.transaction.Rollback();
             }
             catch (Exception ex)
@@ -369,7 +384,22 @@ namespace academedyaStaj
                 closeDB(_connection);
             }
         }
+        public void Add_Parameter(String param, String value)
+        {
+            try
+            {
+                if (_connection != null && _connection.State == ConnectionState.Closed)
+                    openDB(_connection);
+
+                mainCommand.Parameters.AddWithValue("@" + param, value);
+            }
+            catch (Exception myExp)
+            {
+                throw myExp;
+            }
+        }
+
     }
-   
+
 
 }
